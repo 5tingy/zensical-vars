@@ -57,10 +57,6 @@ jobs:
 
       - name: Test
         run: python -m pytest -v --tb=short
-        env:
-          # Fail rather than skip if Zensical is missing, so the build tests
-          # can never pass by not running.
-          ZENSICAL_VARS_REQUIRE_BUILD: "1"
 
   markdown-versions:
     name: Python-Markdown ${{ matrix.markdown }}

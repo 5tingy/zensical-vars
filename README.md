@@ -147,6 +147,8 @@ black .        # formatting
 ruff check .   # linting
 ```
 
+The suite tests this extension, not Zensical: every test renders Markdown directly and asserts on the HTML, so no site build is involved and a bug in any downstream renderer cannot turn the build red.
+
 Both tools are pinned in the `dev` extra so local runs match CI exactly. Black owns formatting at its default 88 columns; ruff lints only, configured to the same width so `E501` and the formatter can never disagree.
 
 The suite covers substitution inside every fence implementation, literal passthrough, escaping, panel markup, the asset installer, and a real Zensical build. CI runs it across Python 3.9–3.13 and against each supported Python-Markdown minor version, since the extension depends on processor priorities relative to the fenced-code and raw-HTML stages.

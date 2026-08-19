@@ -104,11 +104,27 @@ def test_page_without_a_block_is_untouched():
 # -- output hygiene -------------------------------------------------------
 
 
-def test_no_styles_or_scripts_are_emitted():
-    """Anything in the body leaks into the page title and search index."""
-    html = render(block("host: 1.2.3.4") + "\n<<host>>")
+@pytest.mark.parametrize(
+    "options",
+    [
+        "",
+        "style: card\nfields:\n  host: 1.2.3.4",
+        "collapsible: true\nfields:\n  host: x",
+    ],
+)
+def test_only_page_content_is_emitted(options):
+    """Anything else in the body leaks into the page title and search index.
+
+    This is the invariant a real site build used to be needed to catch: a
+    <style> or <script> here ends up in the <title>, the header and the search
+    index, because Zensical derives page titles by stripping tags.
+    """
+    declaration = block(options or "host: 1.2.3.4")
+    html = render(declaration + "\n<<host>>")
     assert "<style" not in html
     assert "<script" not in html
+    assert "<link" not in html
+    assert "<iframe" not in html
 
 
 def test_state_does_not_leak_between_documents():
@@ -274,7 +290,7 @@ def test_storage_and_persistence_reach_the_markup():
 @pytest.mark.parametrize(
     "field",
     [
-        'default: \'"><script>alert(1)</script>\'',
+        "default: '\"><script>alert(1)</script>'",
         "label: '<b>bold</b>'",
         "help: '\"quoted\"'",
     ],

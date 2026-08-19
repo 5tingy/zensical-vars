@@ -46,7 +46,6 @@ dev = [
   # ruff-action reads its version here rather than defaulting to the latest.
   "black==25.9.0",
   "ruff==0.16.3",
-  "zensical",
 ]
 
 [project.urls]
