@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zensical-vars"
-version = "0.1.0"
+version = "1.0.0"
 description = "Reader-editable values in Zensical code blocks and prose"
 readme = "README.md"
 requires-python = ">=3.9"
