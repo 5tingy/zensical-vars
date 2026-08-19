@@ -44,7 +44,7 @@ dev = [
   "pytest>=7.0",
   # Pinned so a new release cannot fail CI on rules or style the code predates.
   # ruff-action reads its version here rather than defaulting to the latest.
-  "black==25.9.0",
+  "black==26.3.1",
   "ruff==0.16.3",
 ]
 
