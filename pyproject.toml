@@ -42,8 +42,9 @@ dependencies = [
 dev = [
   "pymdown-extensions>=10.0",
   "pytest>=7.0",
-  # Pinned so a new ruff release cannot fail CI on rules the code predates.
-  # ruff-action reads this version, rather than defaulting to the latest.
+  # Pinned so a new release cannot fail CI on rules or style the code predates.
+  # ruff-action reads its version here rather than defaulting to the latest.
+  "black==25.9.0",
   "ruff==0.16.3",
   "zensical",
 ]
@@ -70,9 +71,18 @@ zensical_vars = ["assets/*.css", "assets/*.js"]
 testpaths = ["tests"]
 addopts = "--strict-markers"
 
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
 [tool.ruff]
-line-length = 90
+# Matches black, so E501 and the formatter can never disagree.
+line-length = 88
 target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+# black owns formatting; ruff lints only.
+exclude = ["*"]
