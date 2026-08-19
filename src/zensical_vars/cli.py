@@ -1,8 +1,7 @@
 """Copy the bundled assets into a docs directory.
 
-Zensical does not load third-party MkDocs plugins, so under Zensical the two
-assets have to live in the docs directory like any other custom stylesheet or
-script. This copies them there:
+The stylesheet and script live in the docs directory like any other custom
+asset, registered with extra_css and extra_javascript. This copies them there:
 
     zensical-vars install docs
 """
@@ -34,11 +33,13 @@ def install(docs_dir: Path) -> int:
         written.append(target)
         print(f"Wrote {target}")
 
-    print("\nNow update your zensical.toml configuration:\n")
-    print("  [project.markdown_extensions.zensical_vars]")
-    print(f"  extra_css = [\"{SUBDIRS['.css']}/{ASSETS[1]}\"]")
-    print(f"  extra_javascript = [\"{SUBDIRS['.js']}/{ASSETS[1]}\"]")
-    print("\n")
+    print("\nNow add to your configuration:\n")
+    print("  markdown_extensions:")
+    print("    - zensical_vars\n")
+    print("  extra_css:")
+    print(f"    - {SUBDIRS['.css']}/{ASSETS[0]}")
+    print("  extra_javascript:")
+    print(f"    - {SUBDIRS['.js']}/{ASSETS[1]}")
     return 0
 
 

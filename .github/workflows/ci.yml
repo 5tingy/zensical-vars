@@ -57,6 +57,10 @@ jobs:
 
       - name: Test
         run: python -m pytest -v --tb=short
+        env:
+          # Fail rather than skip if Zensical is missing, so the build tests
+          # can never pass by not running.
+          ZENSICAL_VARS_REQUIRE_BUILD: "1"
 
   markdown-versions:
     name: Python-Markdown ${{ matrix.markdown }}
@@ -127,12 +131,12 @@ jobs:
       - name: Install from the wheel and smoke-test it
         run: |
           python -m venv /tmp/smoke
-          /tmp/smoke/bin/python -m pip install --quiet dist/*.whl mkdocs
+          /tmp/smoke/bin/python -m pip install --quiet dist/*.whl
           /tmp/smoke/bin/python - <<'EOF'
           import markdown
           from importlib.metadata import entry_points
 
-          groups = {"markdown.extensions", "mkdocs.plugins", "console_scripts"}
+          groups = {"markdown.extensions", "console_scripts"}
           found = {
               group
               for group in groups

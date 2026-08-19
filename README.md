@@ -23,22 +23,30 @@ The page ships with `ssh my-user@192.168.1.1`. A reader who enters `10.0.4.20` s
 
 ## Install
 
-```bash
-pip install zensical-vars
-```
-
-### Zensical
-
 This plugin has been tested with zensical version 0.0.55.
 
-Zensical does not load third-party plugins, so the stylesheet and script are placed in your docs directory like any other customization:
-
 ```bash
+pip install zensical-vars
 zensical-vars install docs
 ```
 
+The second command copies the stylesheet and script into your docs directory,
+where they sit like any other customization. Then register all three pieces in
+`zensical.toml`:
+
+```toml
+[project]
+extra_css = ["stylesheets/zensical-vars.css"]
+extra_javascript = ["javascripts/zensical-vars.js"]
+
+[project.markdown_extensions.zensical_vars]
+type = "example"
+```
+
+Projects still carrying a YAML config can use the equivalent keys there, since
+Zensical reads that format natively:
+
 ```yaml
-# mkdocs.yml
 markdown_extensions:
   - zensical_vars
 
@@ -49,16 +57,6 @@ extra_javascript:
 ```
 
 Keep any other `markdown_extensions` you already have in that list, since naming the key can replace Zensical's defaults. Re-run `zensical-vars install` after upgrading to refresh the assets.
-
-### MkDocs
-
-Enable the plugin and it registers the extension and its assets for you — nothing to copy, nothing else to configure:
-
-```yaml
-# mkdocs.yml
-plugins:
-  - zensical-vars
-```
 
 ## Declaring fields
 
@@ -147,7 +145,7 @@ pip install -e ".[dev]"
 pytest
 ```
 
-The suite covers substitution inside every fence implementation, literal passthrough, escaping, panel markup and a real MkDocs build. CI runs it across Python 3.9–3.13 and against each supported Python-Markdown minor version, since the extension depends on processor priorities relative to the fenced-code and raw-HTML stages.
+The suite covers substitution inside every fence implementation, literal passthrough, escaping, panel markup, the asset installer, and a real Zensical build. CI runs it across Python 3.9–3.13 and against each supported Python-Markdown minor version, since the extension depends on processor priorities relative to the fenced-code and raw-HTML stages.
 
 ## Licence
 

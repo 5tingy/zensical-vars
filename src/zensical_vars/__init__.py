@@ -1,4 +1,4 @@
-"""Reader-editable variables for Zensical and MkDocs pages."""
+"""Reader-editable variables for Zensical pages."""
 
 from __future__ import annotations
 
