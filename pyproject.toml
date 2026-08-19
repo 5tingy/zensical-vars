@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zensical-vars"
+version = "0.1.0"
+description = "Reader-editable values in Zensical and MkDocs code blocks and prose"
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = [
+  "zensical",
+  "mkdocs",
+  "mkdocs-plugin",
+  "markdown",
+  "markdown-extension",
+  "documentation",
+]
+
+authors = [{ name = "5tingy", email = "22412849+5tingy@users.noreply.github.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Framework :: Zensical",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Documentation",
+  "Topic :: Software Development :: Documentation",
+  "Topic :: Text Processing :: Markup :: Markdown",
+  "Typing :: Typed",
+]
+dependencies = [
+  "markdown>=3.4",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+mkdocs = ["mkdocs>=1.5"]
+dev = [
+  "mkdocs>=1.5",
+  "pymdown-extensions>=10.0",
+  "pytest>=7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-account/zensical-vars"
+Source = "https://github.com/your-account/zensical-vars"
+Issues = "https://github.com/your-account/zensical-vars/issues"
+Changelog = "https://github.com/your-account/zensical-vars/blob/main/CHANGELOG.md"
+
+[project.scripts]
+zensical-vars = "zensical_vars.cli:main"
+
+[project.entry-points."markdown.extensions"]
+zensical_vars = "zensical_vars:ZensicalVarsExtension"
+
+[project.entry-points."mkdocs.plugins"]
+zensical-vars = "zensical_vars.plugin:ZensicalVarsPlugin"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+zensical_vars = ["assets/*.css", "assets/*.js"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+
+[tool.ruff]
+line-length = 90
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

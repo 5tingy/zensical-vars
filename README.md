@@ -1,0 +1,154 @@
+# zensical-vars
+
+Let readers put their own values into your examples. Declare a few fields on a page, reference them in code blocks and prose, and every reference updates as the reader types.
+
+_Note: This is an unoffical zensical plugin, and this project was entirely vibe (or slop) coded by Claude._
+
+````markdown
+```zvars
+- name: host
+  label: Server address
+  default: 192.168.1.1
+- name: user
+  label: Username
+  default: my-user
+```
+
+```bash
+ssh <<user>>@<<host>>
+```
+````
+
+The page ships with `ssh my-user@192.168.1.1`. A reader who enters `10.0.4.20` sees `ssh my-user@10.0.4.20` everywhere on the page, and the copy button copies their version. Nothing is client-rendered: defaults are substituted at build time, so the page reads correctly with JavaScript disabled.
+
+## Install
+
+```bash
+pip install zensical-vars
+```
+
+### Zensical
+
+This plugin has been tested with zensical version 0.0.55.
+
+Zensical does not load third-party plugins, so the stylesheet and script are placed in your docs directory like any other customization:
+
+```bash
+zensical-vars install docs
+```
+
+```yaml
+# mkdocs.yml
+markdown_extensions:
+  - zensical_vars
+
+extra_css:
+  - stylesheets/zensical-vars.css
+extra_javascript:
+  - javascripts/zensical-vars.js
+```
+
+Keep any other `markdown_extensions` you already have in that list, since naming the key can replace Zensical's defaults. Re-run `zensical-vars install` after upgrading to refresh the assets.
+
+### MkDocs
+
+Enable the plugin and it registers the extension and its assets for you — nothing to copy, nothing else to configure:
+
+```yaml
+# mkdocs.yml
+plugins:
+  - zensical-vars
+```
+
+## Declaring fields
+
+Fields are declared per page in a fenced `zvars` block, which renders as the panel of inputs. Put it where you want the panel to appear.
+
+Shorthand, when a name and a default are all you need:
+
+```yaml
+host: 192.168.1.1
+user: my-user
+```
+
+Full form, with panel options under a `fields` key:
+
+```yaml
+title: Point these examples at your own server
+collapsible: true       # fold the panel away
+open: false             # ...and start it collapsed
+panel: false            # declare the fields, render no panel
+fields:
+  - name: host
+    default: 192.168.1.1
+    help: The machine you are connecting to.
+  - name: port
+    default: 22
+    type: number        # text, number, password, email, url, tel, search
+  - name: shell
+    default: bash
+    options: [bash, zsh, fish]
+```
+
+## Referencing values
+
+Write `<<name>>` in fenced code, inline code, tables, admonitions, tabbed content, link targets or plain prose. Escape a literal with a backslash: `\<<host>>`. Declare the same name on several pages and a reader's value follows them across the site.
+
+## Options
+
+| Option | Default | What it does |
+| --- | --- | --- |
+| `start` / `end` | `<<` / `>>` | Reference delimiters. |
+| `block` | `zvars` | Info string of the declaration fence. |
+| `title` | `Use your own values` | Panel heading. |
+| `note` | see source | Tooltip on the info icon. `""` hides the icon. |
+| `reset_label` | `Reset to defaults` | Accessible label of the reset button. |
+| `style` | `admonition` | `admonition` uses a theme card; `card` restyles its chrome. |
+| `type` | `example` | Admonition type supplying the icon and colour scheme. |
+| `collapsible` | `false` | Render the panel as a collapsible `<details>`. |
+| `open` | `true` | Whether a collapsible panel starts expanded. |
+| `persist` | `true` | Remember values across pages in the browser. |
+| `storage_key` | `zensical-vars` | `localStorage` key used for that. |
+| `panel` | `true` | **Block only.** `false` declares the fields but renders no panel. |
+
+Every option except `panel` can be set once in your configuration and overridden per block:
+
+```yaml
+markdown_extensions:
+  - zensical_vars:
+      type: tip
+      collapsible: true
+```
+
+## The panel
+
+The panel is a theme admonition — the same markup an `!!! example` block produces — so its card, beaker icon and colour scheme come from the theme and follow your palette and colour schemes without configuration. Set `type` to any other admonition kind to change the icon and colour, or `style: card` for a flatter variant with a hairline border and a code-toned background.
+
+`collapsible: true` emits a `<details>`, exactly as `??? example` would, with the theme's own collapse control.
+
+Text fields start empty, showing their default as placeholder text, so a reader types straight over it. Clearing a field returns it to the default, meaning the page can never show a blank value.
+
+## How it works
+
+A reference can't simply be replaced with HTML, because by the time a code block reaches the page the highlighter has already split it into `<span>` tokens. So it runs in two stages: a preprocessor swaps each `<<name>>` for an all-letter sentinel that highlighters treat as an ordinary identifier, then a postprocessor swaps sentinels for live spans in the finished HTML — including inside a Pygments string token.
+
+The extension emits page content and nothing else. The stylesheet and script are ordinary assets, loaded once per site and cached, and the script subscribes to the `document$` observable so it rebinds on instant navigation.
+
+## Limitations
+
+- A reference inside an HTML attribute — `[admin](http://<<host>>/)` — renders with its default and doesn't update live. Nothing breaks; the link just stays pointed at the default.
+- Fields must be declared on the page that uses them. Use `panel: false` to declare without rendering a panel.
+- An undeclared reference is left exactly as written and logged as a build warning, so `std::cout << x >> y` passes through untouched.
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+pytest
+```
+
+The suite covers substitution inside every fence implementation, literal passthrough, escaping, panel markup and a real MkDocs build. CI runs it across Python 3.9–3.13 and against each supported Python-Markdown minor version, since the extension depends on processor priorities relative to the fenced-code and raw-HTML stages.
+
+## Licence
+
+MIT.

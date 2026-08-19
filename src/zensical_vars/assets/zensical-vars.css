@@ -1,0 +1,228 @@
+/*!
+ * zensical-vars — styles for the panel contents and the values they drive.
+ *
+ * The panel itself is a theme admonition: its card, icon and colour scheme all
+ * come from the theme, and nothing here overrides them. These rules cover only
+ * what goes inside the body, plus the substituted values out in the page.
+ */
+
+/* The theme clips admonitions, details and their headers, which cuts off the
+   tooltip. The class is doubled so these win against the theme's own rules
+   without resorting to !important. */
+.md-typeset .zv-panel.zv-panel,
+.md-typeset .zv-panel.zv-panel > .admonition-title,
+.md-typeset .zv-panel.zv-panel > summary {
+  overflow: visible;
+}
+
+/* Lifts the header above the body so the bubble is never covered, and rounds
+   the top-right corner the parent is no longer clipping for it. */
+.md-typeset .zv-panel.zv-panel > .admonition-title,
+.md-typeset .zv-panel.zv-panel > summary {
+  position: relative;
+  z-index: 2;
+  border-top-right-radius: 0.2rem;
+}
+
+/* -- fields -------------------------------------------------------------- */
+
+.md-typeset .zv-panel__fields {
+  display: grid;
+  gap: 0.7rem 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  margin: 0.6rem 0;
+}
+
+.zv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.zv-field__label {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.zv-field__control {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 0.05rem solid var(--md-default-fg-color--lighter);
+  border-radius: 0.15rem;
+  background-color: var(--md-default-bg-color);
+  color: var(--md-code-fg-color, var(--md-default-fg-color));
+  font-family: var(--md-code-font-family, monospace);
+  font-size: 0.68rem;
+  line-height: 1.6;
+  transition: border-color 125ms;
+}
+
+.zv-field__control::placeholder {
+  color: var(--md-default-fg-color--lighter);
+}
+
+.zv-field__control:hover {
+  border-color: var(--md-default-fg-color--light);
+}
+
+.zv-field__control:focus {
+  border-color: currentcolor;
+  outline: none;
+}
+
+.zv-field__help {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.6rem;
+  line-height: 1.5;
+}
+
+/* -- tooltip ------------------------------------------------------------- */
+
+.zv-tip {
+  position: relative;
+  display: inline-flex;
+  margin-left: 0.3rem;
+  color: var(--md-default-fg-color--light);
+  cursor: help;
+  font-size: 0.75rem;
+  vertical-align: middle;
+  transition: color 125ms;
+}
+
+.zv-tip:hover,
+.zv-tip:focus-visible {
+  color: inherit;
+  outline: none;
+}
+
+.zv-icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.zv-tip__bubble {
+  position: absolute;
+  bottom: calc(100% + 0.4rem);
+  left: 50%;
+  z-index: 10;
+  width: max-content;
+  max-width: 13rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.15rem;
+  background-color: var(--md-default-fg-color);
+  box-shadow: var(--md-shadow-z2, 0 0 0.2rem rgba(0, 0, 0, 0.2));
+  color: var(--md-default-bg-color);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translate(-50%, 0.15rem);
+  transition: opacity 125ms, transform 125ms;
+  pointer-events: none;
+  text-transform: none;
+  white-space: normal;
+}
+
+.zv-tip:hover .zv-tip__bubble,
+.zv-tip:focus-visible .zv-tip__bubble {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* -- reset --------------------------------------------------------------- */
+
+/* Under the fields rather than in the corner, which belongs to the theme's
+   own collapse control. */
+.md-typeset .zv-panel__foot {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 0.6rem;
+}
+
+.md-typeset .zv-panel__reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.15rem;
+  background: none;
+  color: var(--md-default-fg-color--light);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: color 125ms, background-color 125ms;
+}
+
+.md-typeset .zv-panel__reset:hover {
+  background-color: var(--md-default-fg-color--lightest);
+  color: inherit;
+}
+
+.md-typeset .zv-panel__reset[disabled] {
+  background: none;
+  color: var(--md-default-fg-color--lightest);
+  cursor: default;
+}
+
+/* -- the values themselves ----------------------------------------------- */
+
+/* A hairline underline marks a value as editable without disturbing the
+   surrounding code; once the reader edits it, the mark solidifies so their
+   own value is easy to pick out of a long command. */
+.zv-var {
+  border-bottom: 0.05rem dotted currentcolor;
+  font: inherit;
+  color: inherit;
+}
+
+.zv-var--custom {
+  border-bottom-style: solid;
+  border-radius: 0.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zv-field__control,
+  .zv-tip,
+  .zv-tip__bubble,
+  .zv-panel__reset {
+    transition: none;
+  }
+}
+
+@media print {
+  .zv-panel__foot {
+    display: none;
+  }
+
+  .zv-var {
+    border-bottom: none;
+  }
+}
+
+/* -- card style ---------------------------------------------------------- */
+
+/* Only applied when style is "card". The panel is still a theme admonition —
+   these rules change its chrome only, so the icon, its size and its placement
+   are untouched and stay identical to any other admonition on the page. */
+
+.md-typeset .zv-panel--card {
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  background-color: var(--md-code-bg-color);
+  box-shadow: none;
+  font-size: 0.7rem;
+}
+
+/* Flatten the tinted title bar; the left rule already carries the colour. */
+.md-typeset .zv-panel--card > .admonition-title,
+.md-typeset .zv-panel--card > summary {
+  background-color: transparent;
+}
