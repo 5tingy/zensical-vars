@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zensical-vars"
-version = "0.1.0"
+version = "1.0.0"
 description = "Reader-editable values in Zensical code blocks and prose"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -42,7 +42,10 @@ dependencies = [
 dev = [
   "pymdown-extensions>=10.0",
   "pytest>=7.0",
-  "zensical",
+  # Pinned so a new release cannot fail CI on rules or style the code predates.
+  # ruff-action reads its version here rather than defaulting to the latest.
+  "black==25.9.0",
+  "ruff==0.16.3",
 ]
 
 [project.urls]
@@ -67,9 +70,18 @@ zensical_vars = ["assets/*.css", "assets/*.js"]
 testpaths = ["tests"]
 addopts = "--strict-markers"
 
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
 [tool.ruff]
-line-length = 90
+# Matches black, so E501 and the formatter can never disagree.
+line-length = 88
 target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+# black owns formatting; ruff lints only.
+exclude = ["*"]

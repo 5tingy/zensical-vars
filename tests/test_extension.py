@@ -39,7 +39,8 @@ def block(body: str) -> str:
 
 def test_reference_in_prose_renders_the_default():
     html = render(block("host: 192.168.1.1") + "\nReach it at <<host>>.")
-    assert '<span class="zv-var" data-zv-var="host" data-zv-default="192.168.1.1">' in html
+    assert 'data-zv-var="host"' in html
+    assert 'data-zv-default="192.168.1.1"' in html
     assert "192.168.1.1</span>" in html
 
 
@@ -55,7 +56,8 @@ def test_reference_survives_syntax_highlighting():
 
 @pytest.mark.parametrize("stack", [["fenced_code", "codehilite"], THEME_STACK])
 def test_reference_works_across_fence_implementations(stack):
-    html = render(block("host: 1.2.3.4") + "\n```python\nconnect('<<host>>')\n```", stack)
+    page = block("host: 1.2.3.4") + "\n```python\nconnect('<<host>>')\n```"
+    html = render(page, stack)
     assert html.count('data-zv-var="host"') == 1
 
 
@@ -102,11 +104,27 @@ def test_page_without_a_block_is_untouched():
 # -- output hygiene -------------------------------------------------------
 
 
-def test_no_styles_or_scripts_are_emitted():
-    """Anything in the body leaks into the page title and search index."""
-    html = render(block("host: 1.2.3.4") + "\n<<host>>")
+@pytest.mark.parametrize(
+    "options",
+    [
+        "",
+        "style: card\nfields:\n  host: 1.2.3.4",
+        "collapsible: true\nfields:\n  host: x",
+    ],
+)
+def test_only_page_content_is_emitted(options):
+    """Anything else in the body leaks into the page title and search index.
+
+    This is the invariant a real site build used to be needed to catch: a
+    <style> or <script> here ends up in the <title>, the header and the search
+    index, because Zensical derives page titles by stripping tags.
+    """
+    declaration = block(options or "host: 1.2.3.4")
+    html = render(declaration + "\n<<host>>")
     assert "<style" not in html
     assert "<script" not in html
+    assert "<link" not in html
+    assert "<iframe" not in html
 
 
 def test_state_does_not_leak_between_documents():
@@ -138,7 +156,8 @@ def test_list_of_field_definitions():
 
 
 def test_fields_key_with_panel_options():
-    html = render(block("title: Custom heading\nfields:\n  host: 1.2.3.4") + "\n<<host>>")
+    declaration = block("title: Custom heading\nfields:\n  host: 1.2.3.4")
+    html = render(declaration + "\n<<host>>")
     assert "Custom heading" in html
 
 
@@ -165,7 +184,8 @@ def test_default_renders_as_placeholder_not_value():
 
 
 def test_options_render_a_select_with_the_default_selected():
-    html = render(block("- name: shell\n  default: zsh\n  options: [bash, zsh]") + "\n<<shell>>")
+    declaration = block("- name: shell\n  default: zsh\n  options: [bash, zsh]")
+    html = render(declaration + "\n<<shell>>")
     assert "<select" in html
     assert 'value="zsh" selected' in html
 
@@ -208,7 +228,8 @@ def test_collapsible_emits_details():
 
 
 def test_collapsible_can_start_closed():
-    html = render(block("collapsible: true\nopen: false\nfields:\n  host: x") + "\n<<host>>")
+    declaration = block("collapsible: true\nopen: false\nfields:\n  host: x")
+    html = render(declaration + "\n<<host>>")
     assert " open " not in html
 
 
@@ -242,7 +263,8 @@ def test_config_defaults_can_be_set_globally():
 
 
 def test_block_options_override_configuration():
-    html = render(block("type: note\nfields:\n  host: x") + "\n<<host>>", type="warning")
+    declaration = block("type: note\nfields:\n  host: x")
+    html = render(declaration + "\n<<host>>", type="warning")
     assert "admonition note zv-panel" in html
 
 
@@ -268,7 +290,7 @@ def test_storage_and_persistence_reach_the_markup():
 @pytest.mark.parametrize(
     "field",
     [
-        'default: \'"><script>alert(1)</script>\'',
+        "default: '\"><script>alert(1)</script>'",
         "label: '<b>bold</b>'",
         "help: '\"quoted\"'",
     ],

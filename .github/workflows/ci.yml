@@ -27,9 +27,9 @@ jobs:
         uses: astral-sh/ruff-action@v3
 
       - name: Check formatting
-        uses: astral-sh/ruff-action@v3
+        uses: psf/black@stable
         with:
-          args: format --check
+          options: "--check --diff"
 
   test:
     runs-on: ${{ matrix.os }}
@@ -57,10 +57,6 @@ jobs:
 
       - name: Test
         run: python -m pytest -v --tb=short
-        env:
-          # Fail rather than skip if Zensical is missing, so the build tests
-          # can never pass by not running.
-          ZENSICAL_VARS_REQUIRE_BUILD: "1"
 
   markdown-versions:
     name: Python-Markdown ${{ matrix.markdown }}

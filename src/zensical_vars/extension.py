@@ -52,7 +52,9 @@ ICON_INFO = _SVG.format(
     '<circle cx="12" cy="12" r="9"/><path d="M12 11.5v5"/>'
     '<circle cx="12" cy="7.75" r="1" fill="currentColor" stroke="none"/>'
 )
-ICON_RESET = _SVG.format('<path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3 4v5h5"/>')
+ICON_RESET = _SVG.format(
+    '<path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3"/><path d="M3 4v5h5"/>'
+)
 
 
 def _sentinel(index: int) -> str:
@@ -284,12 +286,11 @@ class VarsPostprocessor(Postprocessor):
 
     @staticmethod
     def _span(field: Field) -> str:
+        name = escape(field.name, quote=True)
+        default = escape(field.default, quote=True)
         return (
-            '<span class="zv-var" data-zv-var="{name}" data-zv-default="{default}">'
-            "{default}</span>"
-        ).format(
-            name=escape(field.name, quote=True),
-            default=escape(field.default, quote=True),
+            f'<span class="zv-var" data-zv-var="{name}" '
+            f'data-zv-default="{default}">{default}</span>'
         )
 
 
@@ -315,10 +316,11 @@ def render_form(
     # header stays a single line.
     tip = ""
     if note:
+        label = escape(note, quote=True)
         tip = (
-            '<span class="zv-tip" tabindex="0" role="note" aria-label="{note}">'
-            '{icon}<span class="zv-tip__bubble">{note}</span></span>'
-        ).format(note=escape(note, quote=True), icon=ICON_INFO)
+            f'<span class="zv-tip" tabindex="0" role="note" aria-label="{label}">'
+            f'{ICON_INFO}<span class="zv-tip__bubble">{label}</span></span>'
+        )
 
     body = '<div class="zv-panel__fields">{}</div>'.format(
         "".join(_render_field(field) for field in fields)
@@ -367,7 +369,8 @@ def _render_field(field: Field) -> str:
         f'data-zv-default="{escape(field.default, quote=True)}"'
     )
     if field.options:
-        control = f'<select class="zv-field__control" {attrs}>{_render_options(field)}</select>'
+        options = _render_options(field)
+        control = f'<select class="zv-field__control" {attrs}>{options}</select>'
     else:
         control = (
             f'<input class="zv-field__control" type="{field.type}" {attrs} '
@@ -380,7 +383,10 @@ def _render_field(field: Field) -> str:
         control = control.replace(
             "class=", f'aria-describedby="{escape(help_id, quote=True)}" class=', 1
         )
-        hint = f'<span class="zv-field__help" id="{escape(help_id, quote=True)}">{escape(field.help)}</span>'
+        hint = (
+            f'<span class="zv-field__help" id="{escape(help_id, quote=True)}">'
+            f"{escape(field.help)}</span>"
+        )
     else:
         hint = ""
 
@@ -403,7 +409,8 @@ def _render_options(field: Field) -> str:
             value = label = _text(option)
         selected = " selected" if value == field.default else ""
         out.append(
-            f'<option value="{escape(value, quote=True)}"{selected}>{escape(label)}</option>'
+            f'<option value="{escape(value, quote=True)}"{selected}>'
+            f"{escape(label)}</option>"
         )
     return "".join(out)
 
@@ -421,7 +428,10 @@ class ZensicalVarsExtension(Extension):
                 "Edit a field and the examples on this page update as you type.",
                 "Explanatory line shown under the heading.",
             ],
-            "reset_label": ["Reset to defaults", "Accessible label of the reset button."],
+            "reset_label": [
+                "Reset to defaults",
+                "Accessible label of the reset button.",
+            ],
             "style": [
                 "admonition",
                 "Panel appearance: 'admonition' uses one of the theme's cards, "
@@ -431,10 +441,16 @@ class ZensicalVarsExtension(Extension):
                 "example",
                 "Admonition type supplying the panel's icon and colour scheme.",
             ],
-            "collapsible": [False, "Render the panel as a collapsible details element."],
+            "collapsible": [
+                False,
+                "Render the panel as a collapsible details element.",
+            ],
             "open": [True, "Whether a collapsible panel starts expanded."],
             "persist": [True, "Remember values across pages in this browser."],
-            "storage_key": ["zensical-vars", "localStorage key used to remember values."],
+            "storage_key": [
+                "zensical-vars",
+                "localStorage key used to remember values.",
+            ],
         }
         super().__init__(**kwargs)
         self.state = State()
