@@ -34,12 +34,11 @@ def install(docs_dir: Path) -> int:
         print(f"Wrote {target}")
 
     print("\nNow add to your configuration:\n")
-    print("  markdown_extensions:")
-    print("    - zensical_vars\n")
-    print("  extra_css:")
-    print(f"    - {SUBDIRS['.css']}/{ASSETS[0]}")
-    print("  extra_javascript:")
-    print(f"    - {SUBDIRS['.js']}/{ASSETS[1]}")
+    print("  [project.markdown_extensions.zensical_vars]")
+    print('  type = "example"\n')
+    print(". [project]")
+    print(f"  extra_css = [\"{SUBDIRS['.css']}/{ASSETS[0]}\"]")
+    print(f"  extra_javascript = [\"{SUBDIRS['.js']}/{ASSETS[1]}\"]")
     return 0
 
 

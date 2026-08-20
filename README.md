@@ -2,6 +2,8 @@
 
 Let readers put their own values into your examples. Declare a few fields on a page, reference them in code blocks and prose, and every reference updates as the reader types.
 
+![Demo of the plugin, showing a user modifying the SSH username and IP fields in a codeblock and docs text.](./assets/zensical-vars-demo.gif)
+
 _Note: This is an unoffical zensical plugin, and this project was entirely vibe (or slop) coded by Claude._
 
 ````markdown
@@ -19,7 +21,7 @@ ssh <<user>>@<<host>>
 ```
 ````
 
-The page ships with `ssh my-user@192.168.1.1`. A reader who enters `10.0.4.20` sees `ssh my-user@10.0.4.20` everywhere on the page, and the copy button copies their version. Nothing is client-rendered: defaults are substituted at build time, so the page reads correctly with JavaScript disabled.
+By providing default values, pages render with `ssh my-user@192.168.1.1`. A reader who enters `10.0.4.20` updates the doc content to `ssh my-user@10.0.4.20`. Defaults are substituted when users modify the value time, so the page even reads correctly with JavaScript disabled.
 
 ## Install
 

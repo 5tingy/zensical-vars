@@ -7,7 +7,7 @@ from pathlib import Path
 from zensical_vars.extension import ZensicalVarsExtension, makeExtension
 
 __all__ = ["ZensicalVarsExtension", "makeExtension", "asset_path", "ASSETS"]
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 #: Filenames of the bundled assets, in the order they should be registered.
 ASSETS = ("zensical-vars.css", "zensical-vars.js")

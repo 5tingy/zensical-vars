@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-08-29
+
+Migrated CLI post-install guidance to Zensical TOML file format rather than
+the legacy mkdocs YAML.
+
+Also added a demo GIF to the README.md & improved some wording.
+
 ## [1.0.0] - 2026-08-19
 
 First stable release. The authoring syntax, the configuration options and the
